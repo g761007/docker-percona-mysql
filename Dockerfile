@@ -1,21 +1,20 @@
-FROM ubuntu:trusty
-MAINTAINER Fernando Mayo <fernando@tutum.co>, Feng Honglin <hfeng@tutum.co>
+FROM phusion/baseimage:0.9.12
+MAINTAINER Daniel <a761007@gmail.com>
 
 # Install packages
-RUN apt-get update
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install mysql-server pwgen
-
-# Remove pre-installed database
-RUN rm -rf /var/lib/mysql/*
+RUN  apt-key adv --keyserver keys.gnupg.net --recv-keys 1C4CBDCDCD2EFD2A
+RUN  echo 'deb http://repo.percona.com/apt trusty main' > /etc/apt/sources.list.d/percona.list
+RUN  apt-get update
+RUN  DEBIAN_FRONTEND=noninteractive apt-get -y install percona-server-server-5.6
 
 # Add MySQL configuration
-ADD my.cnf /etc/mysql/conf.d/my.cnf
-ADD mysqld_charset.cnf /etc/mysql/conf.d/mysqld_charset.cnf
+ADD ./files/my.cnf /etc/mysql/conf.d/my.cnf
+ADD ./files/mysqld_charset.cnf /etc/mysql/conf.d/mysqld_charset.cnf
 
 # Add MySQL scripts
-ADD create_mysql_admin_user.sh /create_mysql_admin_user.sh
-ADD import_sql.sh /import_sql.sh
-ADD run.sh /run.sh
+ADD ./files/create_mysql_admin_user.sh /create_mysql_admin_user.sh
+ADD ./files/import_sql.sh /import_sql.sh
+ADD ./files/run.sh /run.sh
 RUN chmod 755 /*.sh
 
 # Exposed ENV
